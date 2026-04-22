@@ -1,7 +1,8 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
-import { Mail, Lock, Eye, EyeOff, Zap, ArrowRight } from 'lucide-react'
+import { Mail, Lock, Eye, EyeOff, ArrowRight } from 'lucide-react'
+import BrandLogo from '../components/BrandLogo'
 
 export default function Login() {
   const [email, setEmail] = useState('')
@@ -38,10 +39,10 @@ export default function Login() {
 
         <div className="relative z-10">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-2xl bg-brand-600 flex items-center justify-center shadow-brand">
-              <Zap size={20} className="text-white" strokeWidth={2.5} />
+            <div className="rounded-2xl bg-white px-3 py-2 shadow-brand">
+              <BrandLogo />
             </div>
-            <span className="text-white font-bold text-xl">SeguraTech</span>
+            <span className="text-white font-bold text-xl">N9</span>
           </div>
         </div>
 
@@ -79,10 +80,10 @@ export default function Login() {
         <div className="w-full max-w-md animate-fade-in">
           {/* Mobile logo */}
           <div className="lg:hidden flex items-center gap-3 mb-10 justify-center">
-            <div className="w-10 h-10 rounded-2xl bg-brand-600 flex items-center justify-center">
-              <Zap size={20} className="text-white" />
+            <div className="rounded-2xl bg-white px-3 py-2 shadow-brand">
+              <BrandLogo />
             </div>
-            <span className="text-white font-bold text-xl">SeguraTech</span>
+            <span className="text-white font-bold text-xl">N9</span>
           </div>
 
           <div className="mb-8">

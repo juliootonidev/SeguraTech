@@ -1,24 +1,24 @@
 import { useNavigate } from 'react-router-dom'
-import { useQuotes } from '../context/QuotesContext'
-import Topbar from '../components/Topbar'
-import StatCard from '../components/StatCard'
-import Badge from '../components/Badge'
 import {
   FileText, TrendingUp, DollarSign, CheckCircle,
   ArrowRight, Clock, Car, Plus
 } from 'lucide-react'
+import Badge from '../components/Badge'
+import StatCard from '../components/StatCard'
+import Topbar from '../components/Topbar'
+import { useQuotes } from '../context/QuotesContext'
 
 export default function Dashboard() {
-  const { quotes } = useQuotes()
+  const { quotes, metrics } = useQuotes()
   const navigate = useNavigate()
 
-  const totalValue = quotes.reduce((acc, q) => {
-    const raw = parseFloat(q.vehicleValue?.replace(/\D/g, '') || 0) / 100
+  const totalValue = quotes.reduce((acc, quote) => {
+    const raw = parseFloat(quote.vehicleData?.vehicleValue?.replace(/\D/g, '') || 0) / 100
     return acc + raw * 0.03
   }, 0)
 
-  const formatCurrency = (v) =>
-    new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(v)
+  const formatCurrency = (value) =>
+    new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(value)
 
   const recentQuotes = quotes.slice(0, 5)
 
@@ -27,26 +27,21 @@ export default function Dashboard() {
       <Topbar title="Dashboard" subtitle="Visão geral da plataforma" />
 
       <div className="flex-1 p-8 space-y-8">
-        {/* Stats */}
         <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-5">
-          <StatCard title="Cotações Salvas" value={quotes.length} change={12} changeLabel="vs. mês anterior" icon={FileText} color="blue" delay={0} />
+          <StatCard title="Cotações Salvas" value={quotes.length} change={12} changeLabel="registros totais" icon={FileText} color="blue" delay={0} />
           <StatCard title="Prêmio Estimado" value={formatCurrency(totalValue)} change={8} changeLabel="base de cálculo" icon={DollarSign} color="green" delay={100} />
-          <StatCard title="Taxa de Conversão" value="34%" change={-3} changeLabel="emissões / cotações" icon={TrendingUp} color="purple" delay={200} />
-          <StatCard title="Apólices Ativas" value="0" changeLabel="em desenvolvimento" icon={CheckCircle} color="amber" delay={300} />
+          <StatCard title="Cotações Aceitas" value={metrics.acceptedQuotes} changeLabel="confirmadas pelo cliente" icon={TrendingUp} color="purple" delay={200} />
+          <StatCard title="Emissões Ativas" value={metrics.activeEmissions} changeLabel={`${metrics.finishedEmissions} finalizada(s)`} icon={CheckCircle} color="amber" delay={300} />
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* Recent quotes table */}
           <div className="lg:col-span-2 card animate-slide-up opacity-0" style={{ animationDelay: '200ms', animationFillMode: 'forwards' }}>
             <div className="flex items-center justify-between mb-6">
               <div>
                 <h2 className="text-surface-900 font-bold text-base">Cotações Recentes</h2>
                 <p className="text-surface-400 text-xs mt-0.5">Últimas cotações registradas</p>
               </div>
-              <button
-                onClick={() => navigate('/cotacao')}
-                className="btn-primary flex items-center gap-2 text-xs px-4 py-2"
-              >
+              <button onClick={() => navigate('/cotacao')} className="btn-primary flex items-center gap-2 text-xs px-4 py-2">
                 <Plus size={14} />
                 Nova Cotação
               </button>
@@ -65,9 +60,9 @@ export default function Dashboard() {
               </div>
             ) : (
               <div className="space-y-2">
-                {recentQuotes.map((q) => (
+                {recentQuotes.map((quote) => (
                   <div
-                    key={q.id}
+                    key={quote.id}
                     onClick={() => navigate('/timeline')}
                     className="flex items-center gap-4 p-3.5 rounded-xl hover:bg-surface-50 cursor-pointer transition-colors group border border-transparent hover:border-surface-100"
                   >
@@ -75,14 +70,16 @@ export default function Dashboard() {
                       <Car size={18} className="text-brand-600" />
                     </div>
                     <div className="flex-1 min-w-0">
-                      <div className="text-surface-900 font-semibold text-sm truncate">{q.personalData?.name || 'Sem nome'}</div>
-                      <div className="text-surface-400 text-xs truncate">{q.vehicleData?.brand} {q.vehicleData?.model} · {q.vehicleData?.year}</div>
+                      <div className="text-surface-900 font-semibold text-sm truncate">{quote.personalData?.name || 'Sem nome'}</div>
+                      <div className="text-surface-400 text-xs truncate">{quote.protocolId} · {quote.vehicleData?.brand} {quote.vehicleData?.model} · {quote.vehicleData?.year}</div>
                     </div>
                     <div className="text-right flex-shrink-0">
-                      <div className="text-surface-900 font-bold text-sm">{q.result?.monthly || '—'}</div>
+                      <div className="text-surface-900 font-bold text-sm">{quote.result?.monthly || '—'}</div>
                       <div className="text-surface-400 text-xs">mensal</div>
                     </div>
-                    <Badge variant="green" dot>Salva</Badge>
+                    <Badge variant={quote.status === 'aceita' ? 'green' : 'yellow'} dot>
+                      {quote.status === 'aceita' ? 'Aceita' : 'Aguardando'}
+                    </Badge>
                     <ArrowRight size={14} className="text-surface-300 group-hover:text-surface-500 transition-colors" />
                   </div>
                 ))}
@@ -90,16 +87,15 @@ export default function Dashboard() {
             )}
           </div>
 
-          {/* Quick actions */}
           <div className="space-y-4">
             <div className="card animate-slide-up opacity-0" style={{ animationDelay: '300ms', animationFillMode: 'forwards' }}>
               <h2 className="text-surface-900 font-bold text-base mb-4">Ações Rápidas</h2>
               <div className="space-y-2">
                 {[
                   { label: 'Nova Cotação', icon: FileText, to: '/cotacao', color: 'text-brand-600 bg-brand-50' },
-                  { label: 'Ver Timeline', icon: Clock, to: '/timeline', color: 'text-purple-600 bg-purple-50' },
-                  { label: 'Emissão', icon: CheckCircle, to: '/emissao', color: 'text-emerald-600 bg-emerald-50' },
-                ].map(action => (
+                  { label: 'Timeline de Cotação', icon: Clock, to: '/timeline', color: 'text-purple-600 bg-purple-50' },
+                  { label: 'Timeline de Emissão', icon: CheckCircle, to: '/emissao', color: 'text-emerald-600 bg-emerald-50' },
+                ].map((action) => (
                   <button
                     key={action.label}
                     onClick={() => navigate(action.to)}
@@ -115,7 +111,6 @@ export default function Dashboard() {
               </div>
             </div>
 
-            {/* Platform status */}
             <div className="card animate-slide-up opacity-0 bg-gradient-to-br from-brand-600 to-brand-800 border-0" style={{ animationDelay: '400ms', animationFillMode: 'forwards' }}>
               <div className="flex items-center gap-2 mb-3">
                 <span className="w-2 h-2 bg-emerald-400 rounded-full animate-pulse-soft" />

@@ -48,6 +48,16 @@ export default function StepVehicle({ data, onChange, errors }) {
         />
       </FormField>
 
+      <FormField label="Placa" hint="Campo opcional">
+        <input
+          className="input-base uppercase"
+          placeholder="ABC1D23"
+          value={data.plate || ''}
+          onChange={handle('plate')}
+          maxLength={8}
+        />
+      </FormField>
+
       <FormField label="Valor do veículo (FIPE)" required error={errors?.vehicleValue} hint="Digite o valor de mercado conforme tabela FIPE">
         <input
           className="input-base font-mono"

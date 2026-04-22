@@ -1,5 +1,6 @@
-import { NavLink, useNavigate } from 'react-router-dom'
+import { NavLink, useLocation, useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
+import BrandLogo from './BrandLogo'
 import {
   LayoutDashboard,
   FileText,
@@ -8,20 +9,24 @@ import {
   Clock,
   LogOut,
   ChevronRight,
-  Zap,
+  ChevronDown,
 } from 'lucide-react'
 
-const navItems = [
+const mainItems = [
   { to: '/dashboard', icon: LayoutDashboard, label: 'Dashboard' },
   { to: '/cotacao', icon: FileText, label: 'Cotação' },
+]
+
+const timelineItems = [
+  { to: '/timeline', icon: Clock, label: 'Cotação' },
   { to: '/emissao', icon: Send, label: 'Emissão' },
   { to: '/subscricao', icon: Shield, label: 'Subscrição' },
-  { to: '/timeline', icon: Clock, label: 'Timeline' },
 ]
 
 export default function Sidebar() {
   const { user, logout } = useAuth()
   const navigate = useNavigate()
+  const location = useLocation()
 
   const handleLogout = () => {
     logout()
@@ -29,31 +34,30 @@ export default function Sidebar() {
   }
 
   const initials = user?.name?.slice(0, 2).toUpperCase() || 'US'
+  const isTimelineSectionActive = timelineItems.some((item) => location.pathname.startsWith(item.to))
 
   return (
     <aside className="fixed left-0 top-0 h-full w-64 bg-surface-950 flex flex-col z-30">
-      {/* Logo */}
       <div className="px-6 pt-7 pb-6">
         <div className="flex items-center gap-3">
-          <div className="w-9 h-9 rounded-xl bg-brand-600 flex items-center justify-center shadow-brand">
-            <Zap size={18} className="text-white" strokeWidth={2.5} />
+          <div className="rounded-xl bg-white px-2 py-1 shadow-brand">
+            <BrandLogo compact />
           </div>
           <div>
-            <span className="text-white font-bold text-base tracking-tight">SeguraTech</span>
-            <div className="text-surface-500 text-xs font-medium">Plataforma Pro</div>
+            <span className="text-white font-bold text-base tracking-tight">N9</span>
+            <div className="text-surface-500 text-xs font-medium">Plataforma Operacional</div>
           </div>
         </div>
       </div>
 
-      {/* Divider */}
       <div className="mx-6 h-px bg-surface-800 mb-4" />
 
-      {/* Nav */}
       <nav className="flex-1 px-3 space-y-1">
         <div className="px-3 mb-3">
           <span className="text-surface-600 text-xs font-semibold uppercase tracking-widest">Menu</span>
         </div>
-        {navItems.map(({ to, icon: Icon, label }) => (
+
+        {mainItems.map(({ to, icon: Icon, label }) => (
           <NavLink
             key={to}
             to={to}
@@ -73,16 +77,44 @@ export default function Sidebar() {
                   strokeWidth={isActive ? 2 : 1.75}
                 />
                 <span className="flex-1">{label}</span>
-                {isActive && (
-                  <ChevronRight size={14} className="text-brand-500" />
-                )}
+                {isActive && <ChevronRight size={14} className="text-brand-500" />}
               </>
             )}
           </NavLink>
         ))}
+
+        <div className={`mt-2 rounded-2xl border ${isTimelineSectionActive ? 'border-brand-600/20 bg-surface-900/70' : 'border-transparent bg-transparent'}`}>
+          <div className={`flex items-center gap-3 px-3 py-2.5 text-sm font-medium ${isTimelineSectionActive ? 'text-brand-400' : 'text-surface-300'}`}>
+            <Clock size={18} className={isTimelineSectionActive ? 'text-brand-400' : 'text-surface-500'} />
+            <span className="flex-1">Timeline</span>
+            <ChevronDown size={14} className={isTimelineSectionActive ? 'text-brand-500' : 'text-surface-500'} />
+          </div>
+
+          <div className="pb-2">
+            {timelineItems.map(({ to, icon: Icon, label }) => (
+              <NavLink
+                key={to}
+                to={to}
+                className={({ isActive }) =>
+                  `ml-3 mr-2 mt-1 flex items-center gap-3 rounded-xl px-3 py-2 text-sm transition-all ${
+                    isActive
+                      ? 'bg-brand-900 text-white'
+                      : 'text-surface-400 hover:bg-surface-800/60 hover:text-surface-200'
+                  }`
+                }
+              >
+                {({ isActive }) => (
+                  <>
+                    <Icon size={16} className={isActive ? 'text-white' : 'text-surface-500'} />
+                    <span>{label}</span>
+                  </>
+                )}
+              </NavLink>
+            ))}
+          </div>
+        </div>
       </nav>
 
-      {/* User */}
       <div className="p-4">
         <div className="bg-surface-900 rounded-2xl p-3 flex items-center gap-3">
           <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-brand-500 to-brand-700 flex items-center justify-center flex-shrink-0">

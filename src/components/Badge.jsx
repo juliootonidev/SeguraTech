@@ -1,5 +1,5 @@
 const variants = {
-  blue: 'bg-blue-50 text-blue-700 border border-blue-200',
+  blue: 'bg-brand-50 text-brand-800 border border-brand-200',
   green: 'bg-emerald-50 text-emerald-700 border border-emerald-200',
   yellow: 'bg-amber-50 text-amber-700 border border-amber-200',
   red: 'bg-red-50 text-red-700 border border-red-200',
@@ -15,7 +15,7 @@ export default function Badge({ children, variant = 'gray', dot = false }) {
           variant === 'green' ? 'bg-emerald-500' :
           variant === 'yellow' ? 'bg-amber-500' :
           variant === 'red' ? 'bg-red-500' :
-          variant === 'blue' ? 'bg-blue-500' :
+          variant === 'blue' ? 'bg-brand-700' :
           variant === 'purple' ? 'bg-purple-500' :
           'bg-surface-400'
         }`} />

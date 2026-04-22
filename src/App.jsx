@@ -6,6 +6,7 @@ import Login from './pages/Login'
 import Dashboard from './pages/Dashboard'
 import Cotacao from './pages/cotacao/Cotacao'
 import Emissao from './pages/Emissao'
+import EmissaoDetalhe from './pages/EmissaoDetalhe'
 import Subscricao from './pages/Subscricao'
 import Timeline from './pages/Timeline'
 
@@ -31,6 +32,7 @@ function AppRoutes() {
         <Route path="dashboard" element={<Dashboard />} />
         <Route path="cotacao" element={<Cotacao />} />
         <Route path="emissao" element={<Emissao />} />
+        <Route path="emissao/:id" element={<EmissaoDetalhe />} />
         <Route path="subscricao" element={<Subscricao />} />
         <Route path="timeline" element={<Timeline />} />
       </Route>

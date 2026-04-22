@@ -13,7 +13,7 @@ import { ArrowLeft, ArrowRight, Save, CheckCircle } from 'lucide-react'
 const STEPS = ['Dados Pessoais', 'Veículo', 'Coberturas', 'Resultado']
 
 const INITIAL_PERSONAL = { name: '', email: '', phone: '' }
-const INITIAL_VEHICLE = { year: '', brand: '', model: '', vehicleValue: '', protection: 90 }
+const INITIAL_VEHICLE = { year: '', brand: '', model: '', plate: '', vehicleValue: '', protection: 90 }
 const INITIAL_COVERAGES = {
   rouboFurto: false, colisao: false, perdaTotal: false, terceiros: false,
   carroReserva: false, assistencia24h: false, vidros: false, enchente: false,
